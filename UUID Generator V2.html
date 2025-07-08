@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Simple Device Fingerprint</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #fingerprint { margin-top: 20px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Simple Device Fingerprint Generator</h1>
+  <button id="generateBtn">Generate Fingerprint</button>
+  <div id="fingerprint">Click the button to generate fingerprint.</div>
+
+  <script>
+    // Generate a UUIDv4 (GUID)
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
+    // Generate fingerprint: GUID + timestamp
+    function generateFingerprint() {
+      const guid = generateUUID();
+      const timestamp = new Date().toISOString();
+      return `${guid}::${timestamp}`;
+    }
+
+    // Always generate and overwrite fingerprint
+    function initializeFingerprint() {
+      // Always generate new fingerprint (overwrite existing)
+      const fingerprint = generateFingerprint();
+      localStorage.setItem('deviceFingerprint', fingerprint);
+      
+      document.getElementById('fingerprint').textContent = fingerprint;
+      return fingerprint;
+    }
+
+    // Manual generation (always overwrites)
+    document.getElementById('generateBtn').addEventListener('click', () => {
+      const fingerprint = generateFingerprint();
+      localStorage.setItem('deviceFingerprint', fingerprint);
+      document.getElementById('fingerprint').textContent = fingerprint;
+    });
+
+    // Auto-initialize on page load (always overwrites)
+    window.addEventListener('load', initializeFingerprint);
+
+    // Function to get current fingerprint (callable from Flutter)
+    function getStoredFingerprint() {
+      return localStorage.getItem('deviceFingerprint') || 'No fingerprint found';
+    }
+  </script>
+</body>
+</html>
