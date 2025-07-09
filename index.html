@@ -32,12 +32,21 @@
 
     // Always generate and overwrite fingerprint
     function initializeFingerprint() {
-      // Always generate new fingerprint (overwrite existing)
-      const fingerprint = generateFingerprint();
-      localStorage.setItem('deviceFingerprint', fingerprint);
-      
-      document.getElementById('fingerprint').textContent = fingerprint;
-      return fingerprint;
+      const urlParams = new URLSearchParams(window.location.search);
+      const inApp = urlParams.get('inApp') === 'true';
+
+      if (!inApp) {
+        // Opened in browser: always generate and overwrite
+        const fingerprint = generateFingerprint();
+        localStorage.setItem('deviceFingerprint', fingerprint);
+        document.getElementById('fingerprint').textContent = fingerprint;
+        return fingerprint;
+      } else {
+        // Opened inside app: do NOT generate, just fetch existing
+        const fingerprint = localStorage.getItem('deviceFingerprint') || 'No fingerprint found';
+        document.getElementById('fingerprint').textContent = fingerprint;
+        return fingerprint;
+      }
     }
 
     // Manual generation (always overwrites)
